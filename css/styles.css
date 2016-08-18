@@ -1,0 +1,159 @@
+.listo-grid {
+    text-align: center;
+}
+
+.listo-grid ul {
+    list-style: none;
+    margin: 0 auto;
+}
+
+.listo-grid li {
+    display: inline-block;
+    margin: 0 10px 10px 0;
+}
+
+.listo-film {
+    color: #fff;    
+    font-family: HelveticaCondensed,Helvetica,Arial,Lucida Grande,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;    
+    font-size: 24px;
+    height: 150px;
+    overflow: hidden;
+    position: relative;
+    text-align: left;
+    width: 320px;    
+}
+
+.listo-film a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.listo-film-heading {   
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 22px;
+    margin-bottom: 0;
+    text-transform: uppercase;
+}
+
+.list-film-image {
+    position: absolute;
+        top: 0;
+        left: 0;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    vertical-align: middle;
+    width: 100%;
+    z-index: 1;
+}
+
+.list-film-image:hover  {
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    transform: scale(1.2);
+}
+
+.listo-film .listo-film-inner {
+    height: 100%;
+    position: absolute;
+        top: 0;
+        left: 0;
+    width: 100%;
+    z-index: 2;
+}
+
+.listo-film .listo-film-position, .listo-film .listo-film-meta-wrapper {
+    float: left;
+    z-index: 2;
+}
+
+.listo-film .listo-film-position {
+    font-size: 30px;
+    line-height: 1;
+    padding: 20px 0 0 20px;
+}
+
+.listo-film .listo-film-meta-wrapper {
+    border-left: 1px solid #fff;
+    margin-left: 15px;
+    padding-left: 15px;
+    width: 230px;
+}
+
+.listo-film .listo-film-meta-inner {
+    padding: 20px 20px 0 0;
+}
+
+.listo-film .listo-film-meta {
+    display: block;
+    font-size: 14px;
+    font-weight: 100;
+    line-height: 1;
+    margin-top: 2px;
+    text-transform: uppercase;
+}
+
+.listo-film .listo-film-title {    
+    position: relative;
+    z-index: 2;
+}
+
+.listo-film .listo-film-link {
+    cursor: pointer;    
+    display: block;
+    height: 100%;
+    padding: 20px;
+    position: absolute;
+        top: 0;
+        left: 0;    
+    width: 100%;
+    box-sizing: border-box;
+    -webkit-transition-property: background;
+    transition-property: background;
+    -webkit-transition-duration: .1s;
+    transition-duration: .1s;
+    -webkit-transition-timing-function: ease-in;
+    transition-timing-function: ease-in;   
+    z-index: 3; 
+}
+
+.listo-film .listo-film-link:hover + img {
+    -webkit-transform: scale(1.2);
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    transform: scale(1.2);
+}
+
+@media (min-width: 790px){
+
+    .listo-grid li:nth-child(1n) {
+        margin-right: 10px;
+    }
+
+    .listo-grid li:nth-child(2n) {
+        margin-right: 0;
+    }
+
+    .listo-grid li:last-child {
+        margin-right: 0;
+    }    
+}
+
+@media (min-width: 1340px){
+
+    .listo-grid li:nth-child(2n) {
+        margin-right: 10px;
+    }
+
+    .listo-grid li:nth-child(3n) {
+        margin-right: 0;
+    }
+}
