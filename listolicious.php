@@ -2,7 +2,7 @@
 /*
 Plugin Name: Listolicious
 Description: The shortcode displays a movie list in the style of Mubi
-Version:     1.0
+Version:     1.1
 Author:      Daniel Hånberg Alonso
 Author URI:  http://webbilicious.se
 License:     GPLv2 or later
@@ -39,7 +39,7 @@ class Listolicious {
 	/**
 	 * Initiates all hooks, actions and filters. 
 	 *	 	
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	public function init() {
 
@@ -49,6 +49,7 @@ class Listolicious {
 		add_shortcode('listolicious', array( $this, 'shortcode' ) );
 
 		add_action( 'init', array( $this, 'custom_post_type' ), 0 );
+		add_action( 'init', array( $this, 'custom_taxonomy' ), 0 );
 		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ) );
 
 		/* Only load the admin actions if you are in the admin  */
@@ -66,7 +67,7 @@ class Listolicious {
 	/**
 	 * Adds stylesheet
 	 *	 
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function add_style() {
 		wp_register_style( 'listo_stylesheet', plugins_url( '/css/styles.css', __FILE__ ) );
@@ -79,7 +80,7 @@ class Listolicious {
 	 * Because the plugin is made specifically for displaying a movie list with custom fields, we 
 	 * need to create a custom post type.
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function custom_post_type() {
 
@@ -97,6 +98,7 @@ class Listolicious {
 			'view_item'             => __( 'View Movie', 'listolicious' ),
 			'search_items'          => __( 'Search Movie', 'listolicious' ),
 		);
+
 		$args = array(
 			'label'                 => __( 'Movie', 'listolicious' ),
 			'description'           => __( 'Movies for your list', 'listolicious' ),
@@ -111,19 +113,58 @@ class Listolicious {
 			'show_in_admin_bar'     => true,
 			'show_in_nav_menus'     => true,
 			'can_export'            => true,
+			'taxonomies'			=> array( 'lists' ), 
 			'has_archive'           => true,		
 			'exclude_from_search'   => false,
 			'publicly_queryable'    => true,
 			'capability_type'       => 'post',
 		);
+
 		register_post_type( 'movies', $args );
 
 	}
-	
+
+	/**
+	 * Creates the taxonomy "lists"
+	 *
+	 * As we want to be able to create multiple lists, we need a custom taxonomy for this. 
+	 *
+	 * @since 1.1
+	 */
+	function custom_taxonomy() {
+
+		$labels = array(
+			'name'              => __( 'Lists', 'listolicious' ),
+			'singular_name'     => __( 'List', 'listolicious' ),
+			'menu_name'         => __( 'Lists', 'listolicious' ),
+			'name_admin_bar'	=> __( 'Lists', 'listolicious' ),			
+			'search_items'      => __( 'Search Lists', 'listolicious' ),
+			'all_items'         => __( 'All Lists', 'listolicious' ),
+			'edit_item'         => __( 'Edit List', 'listolicious' ),
+			'update_item'       => __( 'Update List', 'listolicious' ),
+			'add_new_item'      => __( 'Add New List', 'listolicious' ),
+			'new_item_name'     => __( 'New List Name', 'listolicious' ),
+		);
+
+		$args = array(
+			'hierarchical'          => false,
+			'labels'                => $labels,
+			'public'                => true,
+			'show_ui'               => true,
+			'show_admin_column'     => true,
+			'query_var'             => true,
+			'publicly_queryable'    => true,
+			'rewrite'               => array( 'slug' => 'list' ),
+		);
+
+		register_taxonomy( 'lists', 'movies', $args );
+
+	}	
+
 	/**
 	 * Adds a metabox with custom fields
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function add_meta_boxes(){
 		add_meta_box('details-meta', __('Details', 'listolicious'), array ($this, 'details'), 'movies', 'side', 'high');
@@ -135,7 +176,7 @@ class Listolicious {
 	 * Because we want to display the director and release year for the movies in our list,
 	 * we need to create custom fields. 
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function details(){
 		global $post;
@@ -156,7 +197,7 @@ class Listolicious {
 	/**
 	 * Saves/updates the new custom fields
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function save_details(){
 		global $post;
@@ -174,11 +215,11 @@ class Listolicious {
 	 * Creates the shortcode which the plugin uses to display the list
 	 *
 	 * The plugin creates the shortcode [listolicious] for displaying the movie list.
-	 * As a default the lists is ordered by the custom field "year". With the attribute 
-	 * "orderby" you can change the list to be ordered by title. 
-	 * Example: [listolicious orderby="title"].
+	 * The shortcode comes with two attributes, "list" and "orderby".
+	 * As a default the lists is ordered by the custom field "year" and shows all movies. 
+	 * Example: [listolicious list="favourites" orderby="title"].
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function shortcode( $atts ) {
 
@@ -186,14 +227,28 @@ class Listolicious {
 		$output = '';
 		$count = 0;		 
 		
-		$atts = shortcode_atts( array( 'orderby' => '' ),
-										$atts );		
+		$atts = shortcode_atts( 
+			array( 
+				'orderby' => '',
+				'list' => '', 
+			), $atts );		
 		
 		$args['order'] = 'ASC';
 		$args['post_type'] = 'movies';
 		$args['posts_per_page'] = -1;
+			
+		$list = sanitize_text_field( $atts[ 'list' ] );
+		if( $list ) {
+			$args['tax_query'] = array(
+				array(
+					'taxonomy' => 'lists',
+					'field'    => 'slug',
+					'terms'    => $list,
+				),
+			);
+		}
 
-		$orderby = $atts[ 'orderby' ];
+		$orderby = sanitize_text_field( $atts[ 'orderby' ] );
 		switch ($orderby) {
 			case 'title':
 				$args['orderby'] = 'title';
@@ -246,7 +301,7 @@ class Listolicious {
 	 *
 	 * We only want to display information in the list view which is relevant to the custom post type.
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function edit_columns($columns){
 		$columns = array(
@@ -254,6 +309,7 @@ class Listolicious {
 			"title" => __( 'Title', 'listolicious' ),
 			"director" => __( 'Director', 'listolicious' ),
 			"year" => __( 'Year', 'listolicious' ),
+			"lists" => __( 'Lists', 'listolicious' ),
 		);
 	  	return $columns;
 	}
@@ -261,7 +317,7 @@ class Listolicious {
 	/**
 	 * Outputs the data from our custom fields in the new list view columns
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function add_columns($column){
 		global $post;
@@ -275,13 +331,16 @@ class Listolicious {
 			$custom = get_post_custom();
 			echo esc_html( $custom['listo_year'][0] );
 			break;			
-		}
+		case "lists":
+	  		echo get_the_term_list($post->ID,'lists','',', ','');
+      		break;
+      	}
 	}
 
 	/**
 	 * Adds quickedit button for editing in list view
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	function quickedit($column_name, $post_type) {	
 	    static $printNonce = TRUE;
@@ -313,7 +372,7 @@ class Listolicious {
 	/**
 	 * Adds quickedit script for getting values into quickedit fields
 	 *
-	 * @since 1.0.0
+	 * @since 1.0
 	 */
 	public function quickedit_script( $hook = '' ) {
 

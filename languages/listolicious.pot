@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Listolicious\n"
-"POT-Creation-Date: 2016-08-16 15:07+0200\n"
+"POT-Creation-Date: 2016-09-03 15:33+0200\n"
 "PO-Revision-Date: 2016-08-12 16:07+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -10,7 +10,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.8\n"
+"X-Generator: Poedit 1.8.9\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -18,62 +18,94 @@ msgstr ""
 "X-Poedit-SearchPath-0: languages\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: listolicious.php:87 listolicious.php:89 listolicious.php:90
+#: listolicious.php:88 listolicious.php:90 listolicious.php:91
 msgid "Movies"
 msgstr ""
 
-#: listolicious.php:88 listolicious.php:101
+#: listolicious.php:89 listolicious.php:102
 msgid "Movie"
 msgstr ""
 
-#: listolicious.php:91
+#: listolicious.php:92
 msgid "Movie Archives"
 msgstr ""
 
-#: listolicious.php:92
+#: listolicious.php:93
 msgid "All Movies"
 msgstr ""
 
-#: listolicious.php:93
+#: listolicious.php:94
 msgid "Add New Movie"
 msgstr ""
 
-#: listolicious.php:94
+#: listolicious.php:95
 msgid "New Movie"
 msgstr ""
 
-#: listolicious.php:95
+#: listolicious.php:96
 msgid "Edit Movie"
 msgstr ""
 
-#: listolicious.php:96
+#: listolicious.php:97
 msgid "Update Movie"
 msgstr ""
 
-#: listolicious.php:97
+#: listolicious.php:98
 msgid "View Movie"
 msgstr ""
 
-#: listolicious.php:98
+#: listolicious.php:99
 msgid "Search Movie"
 msgstr ""
 
-#: listolicious.php:102
+#: listolicious.php:103
 msgid "Movies for your list"
 msgstr ""
 
-#: listolicious.php:129
+#: listolicious.php:136 listolicious.php:138 listolicious.php:139
+msgid "Lists"
+msgstr ""
+
+#: listolicious.php:137
+msgid "List"
+msgstr ""
+
+#: listolicious.php:140
+msgid "Search Lists"
+msgstr ""
+
+#: listolicious.php:141
+msgid "All Lists"
+msgstr ""
+
+#: listolicious.php:142
+msgid "Edit List"
+msgstr ""
+
+#: listolicious.php:143
+msgid "Update List"
+msgstr ""
+
+#: listolicious.php:144
+msgid "Add New List"
+msgstr ""
+
+#: listolicious.php:145
+msgid "New List Name"
+msgstr ""
+
+#: listolicious.php:165
 msgid "Details"
 msgstr ""
 
-#: listolicious.php:147 listolicious.php:252 listolicious.php:297
+#: listolicious.php:185 listolicious.php:291 listolicious.php:336
 msgid "Director"
 msgstr ""
 
-#: listolicious.php:149 listolicious.php:253 listolicious.php:300
+#: listolicious.php:187 listolicious.php:292 listolicious.php:339
 msgid "Year"
 msgstr ""
 
-#: listolicious.php:251
+#: listolicious.php:290
 msgid "Title"
 msgstr ""

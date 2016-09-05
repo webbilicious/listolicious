@@ -3,8 +3,8 @@ Contributors: webbilicious
 Donate link: http://webbilicious.se/en/donate/
 Tags: shortcode, custom post type, list, movie
 Requires at least: 4.5.3
-Tested up to: 4.5.3
-Stable tag: 1.0
+Tested up to: 4.6
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,9 +22,10 @@ The plugin creates the shortcode [listolicious] for displaying a movie list in t
 
 = Usage =
 1. Insert the shortcode [listolicious] in the content of the page/post. 
-2. You can set one option:
-   orderby: title or year (default: year)  
-   Example: [listolicious orderby="title"]  
+2. You can set two options:
+	list:		slug of a list you've created (default: shows all movies)
+	orderby:	title or year (default: year)  
+Example:	[listolicious list="favourites" orderby="title"]  
 
 = Contributors =
 Daniel Hånberg Alonso at [webbilicious](https://profiles.wordpress.org/webbilicious/)  
@@ -47,12 +48,13 @@ So far Listolicious is translated to:
 
 == Changelog ==
 
-= 1.0.0 =
+= 1.1 =
+
+* Created a custom taxonomy and the ability to create multiple lists.
+
+= 1.0 =
 
 * Initial release.
 
 == Upgrade Notice ==
 
-= 1.1.0 =
-
-Support categories and that way the ability to create multiple lists.
