@@ -185,7 +185,7 @@ class Listolicious {
 		$listo_director = isset( $custom["listo_director"][0] ) ? $custom["listo_director"][0] : '';
 		$listo_year = isset( $custom["listo_year"][0] ) ? $custom["listo_year"][0] : '';
 
-		wp_nonce_field( plugin_basename( __FILE__ ), 'movie_edit_nonce' );
+		wp_nonce_field( 'save_listolicious', 'movie_edit_nonce' );
 		?>
 		<p><label><?php _e('Director', 'listolicious'); ?>:</label><br />
 		<input type="text" name="listo_director" value="<?php echo esc_attr( $listo_director ); ?>" /></p>
@@ -202,13 +202,15 @@ class Listolicious {
 	function save_details(){
 		global $post;
 
-		check_admin_referer( plugin_basename( __FILE__ ), 'movie_edit_nonce' );
-		$id = ( isset( $post->ID ) ? get_the_ID() : NULL );
-	 	$listo_director = isset( $_POST['listo_director'] ) ? sanitize_text_field( $_POST['listo_director'] ) : '';
-	 	$listo_year = isset( $_POST['listo_year'] ) ? sanitize_text_field( $_POST['listo_year'] ) : '';
+		if ( ! empty( $_POST ) && check_admin_referer( 'save_listolicious', 'movie_edit_nonce' ) ) {
 
-		update_post_meta( $id, "listo_director", $listo_director );
-		update_post_meta( $id, "listo_year", $listo_year );
+			$id = ( isset( $post->ID ) ? get_the_ID() : NULL );
+		 	$listo_director = isset( $_POST['listo_director'] ) ? sanitize_text_field( $_POST['listo_director'] ) : '';
+		 	$listo_year = isset( $_POST['listo_year'] ) ? sanitize_text_field( $_POST['listo_year'] ) : '';
+
+			update_post_meta( $id, "listo_director", $listo_director );
+			update_post_meta( $id, "listo_year", $listo_year );
+		}
 	}
 
 	/**
