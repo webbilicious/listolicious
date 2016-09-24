@@ -2,7 +2,7 @@
 /*
 Plugin Name: Listolicious
 Description: The shortcode displays a movie list in the style of Mubi
-Version:     1.1
+Version:     1.1.1
 Author:      Daniel Hånberg Alonso
 Author URI:  http://webbilicious.se
 License:     GPLv2 or later
