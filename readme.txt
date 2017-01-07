@@ -3,8 +3,8 @@ Contributors: webbilicious
 Donate link: http://webbilicious.se/en/donate/
 Tags: shortcode, custom post type, list, movie
 Requires at least: 4.5.3
-Tested up to: 4.6
-Stable tag: 1.1.1
+Tested up to: 4.7
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,11 @@ So far Listolicious is translated to:
 1. The list as it is displayed.
 
 == Changelog ==
+
+= 1.2 =
+
+* Added the ability to add a redirect url for the movies, for example a link to IMDb.
+* Minor updates to the stylesheet.
 
 = 1.1.1 =
 

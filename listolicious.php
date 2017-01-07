@@ -45,6 +45,7 @@ class Listolicious {
 
 		load_plugin_textdomain( 'listolicious', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );		
 		add_action( 'wp_print_styles', array( $this, 'add_style' ) );
+      	add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_style' ) );
 		
 		add_shortcode('listolicious', array( $this, 'shortcode' ) );
 
@@ -73,6 +74,16 @@ class Listolicious {
 		wp_register_style( 'listo_stylesheet', plugins_url( '/css/styles.css', __FILE__ ) );
 		wp_enqueue_style( 'listo_stylesheet' );
 	}
+
+	/**
+	 * Adds admin stylesheet
+	 *	 
+	 * @since 1.2
+	 */
+	function add_admin_style() {
+		wp_register_style( 'listo_admin_stylesheet', plugins_url( '/css/admin.css', __FILE__ ) );
+		wp_enqueue_style( 'listo_admin_stylesheet' );
+	}	
 
 	/**
 	 * Creates the custom post type "movies"
@@ -167,7 +178,7 @@ class Listolicious {
 	 * @since 1.0
 	 */
 	function add_meta_boxes(){
-		add_meta_box('details-meta', __('Details', 'listolicious'), array ($this, 'details'), 'movies', 'side', 'high');
+		add_meta_box('details-meta', __('Details', 'listolicious'), array ($this, 'details'), 'movies', 'normal', 'high');
 	}
 
 	/**
@@ -184,13 +195,16 @@ class Listolicious {
 		$custom = get_post_custom($post->ID);
 		$listo_director = isset( $custom["listo_director"][0] ) ? $custom["listo_director"][0] : '';
 		$listo_year = isset( $custom["listo_year"][0] ) ? $custom["listo_year"][0] : '';
+		$listo_url = isset( $custom["listo_url"][0] ) ? $custom["listo_url"][0] : '';
 
 		wp_nonce_field( 'save_listolicious', 'movie_edit_nonce' );
 		?>
 		<p><label><?php _e('Director', 'listolicious'); ?>:</label><br />
-		<input type="text" name="listo_director" value="<?php echo esc_attr( $listo_director ); ?>" /></p>
+		<input type="text" class="listo-input" name="listo_director" value="<?php echo esc_attr( $listo_director ); ?>" /></p>
 		<p><label><?php _e('Year', 'listolicious'); ?>:</label><br />
-		<input type="text" name="listo_year" value="<?php echo esc_attr( $listo_year ); ?>" /></p>
+		<input type="text" class="listo-input_small" name="listo_year" value="<?php echo esc_attr( $listo_year ); ?>" /></p>
+		<p><label><?php _e('Redirect URL', 'listolicious'); ?>:</label><br />
+		<input type="text" class="listo-input" name="listo_url" value="<?php echo esc_attr( $listo_url ); ?>" /></p>
 		<?php
 	} 
 
@@ -207,9 +221,11 @@ class Listolicious {
 			$id = ( isset( $post->ID ) ? get_the_ID() : NULL );
 		 	$listo_director = isset( $_POST['listo_director'] ) ? sanitize_text_field( $_POST['listo_director'] ) : '';
 		 	$listo_year = isset( $_POST['listo_year'] ) ? sanitize_text_field( $_POST['listo_year'] ) : '';
+		 	$listo_url = isset( $_POST['listo_url'] ) ? sanitize_text_field( $_POST['listo_url'] ) : '';
 
 			update_post_meta( $id, "listo_director", $listo_director );
 			update_post_meta( $id, "listo_year", $listo_year );
+			update_post_meta( $id, "listo_url", $listo_url );
 		}
 	}
 
@@ -275,18 +291,28 @@ class Listolicious {
 					$director = $director[0];
 					$year = get_post_meta( get_the_ID(), 'listo_year' );
 					$year = $year[0];
+					$url = get_post_meta( get_the_ID(), 'listo_url' );
 					$comma = (!empty($director) && !empty($year)) ? ', ' : ''; ?>
 						<li class="listo-film">
 							<div class="listo-film-inner">
 								<div class="listo-film-position"><?php echo $count; ?></div>
 								<div class="listo-film-meta-wrapper">
 									<div class="listo-film-meta-inner">
-										<h2 class="listo-film-heading"><a href="<?php echo get_permalink(); ?>" class="listo-film-title" lang="en"><?php echo get_the_title(); ?></a></h2>
+										<h2 class="listo-film-heading"><?php if(empty($url)): ?>
+											<a href="<?php echo get_permalink(); ?>" class="listo-film-title" lang="en"><?php echo get_the_title(); ?></a>
+										<?php else: ?>
+											<a href="<?php echo $url[0]; ?>" class="listo-film-title" target="_blank" lang="en"><?php echo get_the_title(); ?></a>
+										<?php endif; ?>
+										</h2>
 										<div class="listo-film-meta"><?php echo esc_html( $director . $comma . $year ); ?></div>
 									</div>
 								</div>								
 							</div>	
-							<a href="<?php echo get_permalink(); ?>" class="listo-film-link"></a>
+							<?php if(empty($url)): ?>
+								<a href="<?php echo get_permalink(); ?>" class="listo-film-link"></a>
+							<?php else: ?>
+								<a href="<?php echo $url[0]; ?>" class="listo-film-link" target="_blank"></a>
+							<?php endif; ?>
 							<?php echo get_the_post_thumbnail( get_the_ID(), '', array( 'class' => 'list-film-image' ) ); ?>						
 						</li>
 	  			<?php endwhile; ?>

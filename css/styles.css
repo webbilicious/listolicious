@@ -19,6 +19,7 @@
     -moz-osx-font-smoothing: grayscale;    
     font-size: 24px;
     height: 150px;
+    max-width: 100%;
     overflow: hidden;
     position: relative;
     text-align: left;
@@ -30,7 +31,8 @@
     text-decoration: none;
 }
 
-.listo-film-heading {   
+.listo-film-heading { 
+    color: #fff;  
     font-size: 18px;
     font-weight: 700;
     line-height: 22px;
