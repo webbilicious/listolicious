@@ -64,6 +64,8 @@
 }
 
 .listo-film .listo-film-inner {
+    background-image: -webkit-linear-gradient( rgba(50,50,50,0.5), rgba(80,80,80,0.0) );
+    background-image: linear-gradient( rgba(50,50,50,0.5), rgba(80,80,80,0.0) );
     height: 100%;
     position: absolute;
         top: 0;
