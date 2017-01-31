@@ -2,7 +2,7 @@
 /*
 Plugin Name: Listolicious
 Description: The shortcode displays a movie list in the style of Mubi
-Version:     1.2
+Version:     1.2.1
 Author:      Daniel Hånberg Alonso
 Author URI:  http://webbilicious.se
 License:     GPLv2 or later
@@ -313,7 +313,7 @@ class Listolicious {
 							<?php else: ?>
 								<a href="<?php echo $url[0]; ?>" class="listo-film-link" target="_blank"></a>
 							<?php endif; ?>
-							<?php echo get_the_post_thumbnail( get_the_ID(), '', array( 'class' => 'list-film-image' ) ); ?>						
+							<?php echo $this->get_thumbnail( get_the_ID() ); ?>
 						</li>
 	  			<?php endwhile; ?>
 	  			</ul>
@@ -411,6 +411,21 @@ class Listolicious {
 			wp_enqueue_script( 'listo_quickedit', plugins_url('js/quickedit.js', __FILE__), false, null, true );
 
 		}
+	}
+
+	/**
+	 * Displays a placeholder image if a thumbnail does not exist
+	 *
+	 * @since 1.2.1
+	 */
+	function get_thumbnail( $post_id = '' ) {
+		if ( has_post_thumbnail($post_id)): 
+			$image = get_the_post_thumbnail( $post_id, '', array( 'class' => 'list-film-image' ) ); 
+		else: 
+			$image = '<img src="'. plugin_dir_url( __FILE__ ) . 'placeholder.jpg" class="list-film-image" />';
+		endif; 
+
+		return $image;
 	}
 }
 $Listolicious = new Listolicious();
