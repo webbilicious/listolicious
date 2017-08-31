@@ -2,7 +2,7 @@
 /*
 Plugin Name: Listolicious
 Description: The shortcode displays a movie list in the style of Mubi
-Version:     1.2.1
+Version:     1.3
 Author:      Daniel Hånberg Alonso
 Author URI:  http://webbilicious.se
 License:     GPLv2 or later
@@ -56,12 +56,13 @@ class Listolicious {
 		/* Only load the admin actions if you are in the admin  */
 		if ( is_admin() ) {
 
-			add_action( 'save_post', array( $this, 'save_details')  );
 			add_filter( 'manage_edit-movies_columns', array( $this, 'edit_columns' ) );
+			add_filter( 'manage_edit-movies_sortable_columns', array( $this, 'sortable_columns' ) );
+			add_action( 'pre_get_posts', array( $this, 'sort_posts' ), 1 );
 			add_action( 'manage_posts_custom_column', array( $this, 'add_columns' ) );
 			add_action( 'quick_edit_custom_box', array( $this, 'quickedit' ), 10, 2 );
 			add_action(	'admin_enqueue_scripts', array( $this, 'quickedit_script' ), 10,  1 );
-
+			add_action( 'save_post', array( $this, 'save_details'), 10, 1 );
 		}
 	}
 
@@ -192,12 +193,13 @@ class Listolicious {
 	function details(){
 		global $post;
 
+		wp_nonce_field('save_listolicious', 'movie_edit_nonce');
+
 		$custom = get_post_custom($post->ID);
 		$listo_director = isset( $custom["listo_director"][0] ) ? $custom["listo_director"][0] : '';
 		$listo_year = isset( $custom["listo_year"][0] ) ? $custom["listo_year"][0] : '';
 		$listo_url = isset( $custom["listo_url"][0] ) ? $custom["listo_url"][0] : '';
 
-		wp_nonce_field( 'save_listolicious', 'movie_edit_nonce' );
 		?>
 		<p><label><?php _e('Director', 'listolicious'); ?>:</label><br />
 		<input type="text" class="listo-input" name="listo_director" value="<?php echo esc_attr( $listo_director ); ?>" /></p>
@@ -213,19 +215,29 @@ class Listolicious {
 	 *
 	 * @since 1.0
 	 */
-	function save_details(){
+	function save_details($post_id){
 		global $post;
 
-		if ( ! empty( $_POST ) && check_admin_referer( 'save_listolicious', 'movie_edit_nonce' ) ) {
+		if ( ! empty( $_POST ) ) {
 
-			$id = ( isset( $post->ID ) ? get_the_ID() : NULL );
+			//check nonce set
+			if(!isset($_POST['movie_edit_nonce'])){
+			    return false;
+			}
+
+			//verify nonce
+			if(!wp_verify_nonce($_POST['movie_edit_nonce'], 'save_listolicious')){
+			    return false;
+			}
+			
 		 	$listo_director = isset( $_POST['listo_director'] ) ? sanitize_text_field( $_POST['listo_director'] ) : '';
 		 	$listo_year = isset( $_POST['listo_year'] ) ? sanitize_text_field( $_POST['listo_year'] ) : '';
 		 	$listo_url = isset( $_POST['listo_url'] ) ? sanitize_text_field( $_POST['listo_url'] ) : '';
 
-			update_post_meta( $id, "listo_director", $listo_director );
-			update_post_meta( $id, "listo_year", $listo_year );
-			update_post_meta( $id, "listo_url", $listo_url );
+			update_post_meta( $post_id, "listo_director", $listo_director );
+			update_post_meta( $post_id, "listo_year", $listo_year );
+			update_post_meta( $post_id, "listo_url", $listo_url );
+
 		}
 	}
 
@@ -347,10 +359,10 @@ class Listolicious {
 	 *
 	 * @since 1.0
 	 */
-	function add_columns($column){
+	function add_columns($columns){
 		global $post;
 	
-		switch ($column) {
+		switch ($columns) {
 		case "director":
 			$custom = get_post_custom();
 			echo esc_html( $custom['listo_director'][0] );
@@ -366,16 +378,60 @@ class Listolicious {
 	}
 
 	/**
+	 * The following filter makes the custom columns sortable.
+	 *
+	 * @since 1.3
+	 */
+	function sortable_columns( $sortable_columns ) {
+
+	    $sortable_columns[ 'director' ] = 'director';
+	    $sortable_columns[ 'year' ] = 'year';
+
+	    return $sortable_columns;
+	}
+
+	/**
+	 * The following action makes the custom columns sortable.
+	 *
+	 * @since 1.3
+	 */
+	function sort_posts( $query ) {
+
+	    /**
+	     * We only want our code to run in the main WP query
+	     * AND if an orderby query variable is designated.
+	     */
+	    if ( $query->is_main_query() && ( $orderby = $query->get( 'orderby' ) ) ) {
+
+	        switch( $orderby ) {
+
+	            case 'director':
+
+	                $query->set( 'meta_key', 'listo_director' );
+	                $query->set( 'orderby', 'meta_value' );
+
+	                break;
+
+	            case 'year':
+
+	                $query->set( 'meta_key', 'listo_year' );
+	                $query->set( 'orderby', 'meta_value' );
+
+	                break;	                
+
+	        }
+	    }
+	}
+
+
+	/**
 	 * Adds quickedit button for editing in list view
 	 *
 	 * @since 1.0
 	 */
 	function quickedit($column_name, $post_type) {	
-	    static $printNonce = TRUE;
-	    if ( $printNonce ) {
-	        $printNonce = FALSE;
-	        wp_nonce_field( plugin_basename( __FILE__ ), 'movie_edit_nonce' );
-	    }
+	   
+	    wp_nonce_field( 'save_listolicious', 'movie_edit_nonce' );
 
 	    ?>
 	    <fieldset class="inline-edit-col-right">
