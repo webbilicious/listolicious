@@ -34,7 +34,7 @@
 
 .listo-film-heading { 
     color: #fff;  
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 700;
     line-height: 22px;
     margin-bottom: 0;
@@ -98,7 +98,7 @@
 
 .listo-film .listo-film-meta {
     display: block;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 100;
     line-height: 1;
     margin-top: 2px;
@@ -138,6 +138,14 @@
 }
 
 @media (min-width: 790px){
+
+    .listo-film-heading { 
+        font-size: 18px;
+    }
+
+    .listo-film .listo-film-meta {
+        font-size: 12px;
+    }
 
     .listo-grid li:nth-child(1n) {
         margin-right: 10px;
