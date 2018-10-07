@@ -2,7 +2,7 @@
 /*
 Plugin Name: Listolicious
 Description: The shortcode displays a movie list in the style of Mubi
-Version:     1.3.1
+Version:     1.4
 Author:      Daniel Hånberg Alonso
 Author URI:  http://webbilicious.se
 License:     GPLv2 or later
@@ -43,11 +43,16 @@ class Listolicious {
 	 */
 	public function init() {
 
+		define("LISTO_PLUGIN_PATH", plugin_dir_path(__FILE__));
+
+		require_once(LISTO_PLUGIN_PATH."widget.php");
+
 		load_plugin_textdomain( 'listolicious', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );		
 		add_action( 'wp_print_styles', array( $this, 'add_style' ) );
       	add_action( 'admin_enqueue_scripts', array( $this, 'add_admin_style' ) );
 		
 		add_shortcode('listolicious', array( $this, 'shortcode' ) );
+		add_shortcode('listolicious-widget', array( $this, 'shortcode_widget' ) );
 
 		add_action( 'init', array( $this, 'custom_post_type' ), 0 );
 		add_action( 'init', array( $this, 'custom_taxonomy' ), 0 );
@@ -55,7 +60,6 @@ class Listolicious {
 
 		/* Only load the admin actions if you are in the admin  */
 		if ( is_admin() ) {
-
 			add_filter( 'manage_edit-movies_columns', array( $this, 'edit_columns' ) );
 			add_filter( 'manage_edit-movies_sortable_columns', array( $this, 'sortable_columns' ) );
 			add_action( 'pre_get_posts', array( $this, 'sort_posts' ), 1 );
@@ -337,6 +341,60 @@ class Listolicious {
 	}
 
 	/**
+	 * Creates a shortcode for displaying a random movie from your list
+	 *
+	 * @since 1.4
+	 */
+	function shortcode_widget() {
+
+		$args = array();
+		$output = ''; 
+
+		$args['orderby'] = 'rand';
+		$args['post_type'] = 'movies';
+		$args['posts_per_page'] = 1;
+			
+		query_posts( $args );
+     		
+		if (have_posts()) :
+			ob_start();?>
+			<?php while (have_posts()) : the_post();
+				$director = get_post_meta( get_the_ID(), 'listo_director' );
+				$director = $director[0];
+				$year = get_post_meta( get_the_ID(), 'listo_year' );
+				$year = $year[0];
+				$url = get_post_meta( get_the_ID(), 'listo_url' );
+				$comma = (!empty($director) && !empty($year)) ? ', ' : ''; ?>
+					<div class="listo-film list-film-widget">
+						<div class="listo-film-inner">
+							<div class="listo-film-position"></div>
+							<div class="listo-film-meta-wrapper">
+								<div class="listo-film-meta-inner">
+									<h2 class="listo-film-heading"><?php if(empty($url)): ?>
+										<a href="<?php echo get_permalink(); ?>" class="listo-film-title" lang="en"><?php echo get_the_title(); ?></a>
+									<?php else: ?>
+										<a href="<?php echo $url[0]; ?>" class="listo-film-title" target="_blank" lang="en"><?php echo get_the_title(); ?></a>
+									<?php endif; ?>
+									</h2>
+									<div class="listo-film-meta"><?php echo esc_html( $director . $comma . $year ); ?></div>
+								</div>
+							</div>								
+						</div>	
+						<?php if(empty($url)): ?>
+							<a href="<?php echo get_permalink(); ?>" class="listo-film-link"></a>
+						<?php else: ?>
+							<a href="<?php echo $url[0]; ?>" class="listo-film-link" target="_blank"></a>
+						<?php endif; ?>
+						<?php echo $this->get_thumbnail( get_the_ID() ); ?>
+					</div>
+  			<?php endwhile; ?>
+		<?php $output = ob_get_clean();
+		endif;
+		wp_reset_query();
+		return $output;
+	}
+
+	/**
 	 * Edits columns in list view to accommodate new custom fields
 	 *
 	 * We only want to display information in the list view which is relevant to the custom post type.
@@ -482,6 +540,8 @@ class Listolicious {
 		endif; 
 
 		return $image;
-	}
+	} 
+
 }
+
 $Listolicious = new Listolicious();

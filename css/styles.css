@@ -27,6 +27,11 @@
     width: 320px;    
 }
 
+.list-film-widget {
+    height: 170px;
+    width: 100%;
+}
+
 .listo-film a {
     color: #fff;
     text-decoration: none;
@@ -160,7 +165,7 @@
     }    
 }
 
-@media (min-width: 1340px){
+@media (min-width: 1020px){
 
     .listo-grid li:nth-child(2n) {
         margin-right: 10px;
@@ -169,4 +174,15 @@
     .listo-grid li:nth-child(3n) {
         margin-right: 0;
     }
+}
+
+@media (min-width: 1350px){
+
+    .listo-grid li:nth-child(2n) {
+        margin-right: 10px;
+    }
+
+    .listo-grid li:nth-child(3n) {
+        margin-right: 10px;
+    }     
 }

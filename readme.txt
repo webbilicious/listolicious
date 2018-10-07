@@ -3,8 +3,8 @@ Contributors: webbilicious
 Donate link: http://webbilicious.se/en/donate/
 Tags: shortcode, custom post type, list, movie
 Requires at least: 4.5.3
-Tested up to: 4.9
-Stable tag: 1.3.1
+Tested up to: 4.9.8
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -47,6 +47,12 @@ So far Listolicious is translated to:
 1. The list as it is displayed.
 
 == Changelog ==
+
+
+= 1.4 =
+
+* Widget-functionality 
+* Added uninstall.php
 
 = 1.3.1 =
 
